@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <cstring>
+
 /*
  * ENTRADAS:
  *          -grupo*
@@ -15,8 +17,8 @@
  *          -editar contacto/eliminar
  *          -buscar por nombre/apellido
  */
-
-//CREA UN GRUPO NULO, OSEA UN "SIN GRUPO"
+using namespace std;
+//CREA UN GRUPO QUE SEA NULO, OSEA, UN "SIN GRUPO" (nota propia)
 struct Datos{
     char grupo[50];
     char nombre[50];
@@ -24,20 +26,21 @@ struct Datos{
     int telefono;
     char correo_electronico[50];
 };
-char nombre_arch[30]; //nombre del archivo a ser creado
+char nombre_arch[20] = "contactos.txt"; //nombre del archivo a ser creado
+char nombre_indi[20] = "indice.txt";
+
 void datos(Datos *pedir);
 void guardar_datos();
-void lectura();
+string lectura();
 void menu();
 void menu_dos(int &opcion);
+void buscar(string palabra);
+void cambio();
 
-using namespace std;
 
 int main() {
-    int opcion;
-    menu();
-    cin>> opcion;
-    menu_dos(opcion);
+    guardar_datos();
+    lectura();
 
     return 0;
 }
@@ -90,7 +93,7 @@ void datos(Datos *pedir) {                                     //funcion para so
     scanf("%u", &(pedir->telefono));
     cout << "Correo electronico: ";
     scanf("%s", pedir->correo_electronico);
-    cout << "--------------------------------"<< endl; // el end1 es para asegurar que el texto se muestre antes de continuar con la siguiente instrucción.
+    cout << "<<-------------------------------->>"<< endl; // el end1 es para asegurar que el texto se muestre antes de continuar con la siguiente instrucción.
 }
 /*
 * Nombre de la función: lectura
@@ -102,20 +105,41 @@ void datos(Datos *pedir) {                                     //funcion para so
 *                            en una variable temporal llamado texto
 *                            y los lee, además de corroborar su existencia
 */
-void lectura() {
-    char nombre_lista[20];
-    cin>> nombre_lista;
+string lectura() {
     ifstream archivo;
     string texto;
-    archivo.open(nombre_lista, ios::in);//abrimos un archivo en modo lectura
+    archivo.open(nombre_arch, ios::in);//abrimos un archivo en modo lectura
     if (archivo.fail()) {
         cout<<"ERROR, no se puedo encontrar el archivo con el nombre ingresado\n";
     }
     while (!archivo.eof()) {//mientras no sea el final del archivo
         getline(archivo, texto);
-        cout<< texto.c_str();
+        cout<< texto.c_str()<<endl;
     }
     archivo.close();
+    cout<<"Fin lectura"<<endl;
+    return texto;
+}
+void buscar(string palabra){
+    string texto = lectura();
+    if(texto.find(palabra) != string::npos){
+        cout<<texto.find(palabra);
+
+    }
+}
+void cambio() {
+        // Abrir archivo en modo de escritura
+        ofstream archivo(nombre_arch, ios::app);
+
+        if (!archivo.is_open()) {
+            cout << "Error al abrir el archivo" << endl;
+        }
+
+        // Escribir una nueva línea en el archivo
+        archivo << "Nueva línea de texto" << endl;
+
+        // Cerrar el archivo
+        archivo.close();
 }
 /*
 * Nombre de la función: menu
