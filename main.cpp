@@ -19,23 +19,24 @@
  */
 using namespace std;
 //CREA UN GRUPO QUE SEA NULO, OSEA, UN "SIN GRUPO" (nota propia)
-struct Datos{
-    char grupo[50];
-    char nombre[50];
-    char apellido[50];
-    int telefono;
-    char correo_electronico[50];
-};
+
+
+char grupo[50];
+char nombre[50];
+char apellido[50];
+int telefono;
+char correo_electronico[50];
+
 char nombre_arch[20] = "contactos.txt"; //nombre del archivo a ser creado
 char nombre_indi[20] = "indice.txt";
 
-void datos(Datos *pedir);
 void guardar_datos();
 string lectura();
 void menu();
 void menu_dos(int &opcion);
 void buscar(string palabra);
 void cambio();
+char * datos();
 
 
 int main() {
@@ -44,56 +45,36 @@ int main() {
 
     return 0;
 }
-/*
-* Nombre de la función: guardar_datos
-* Tipo de función: void
-* Parámetros: sin parametros
-* Dato de retorno: sin retorno
-* Descripción de la función: Crea un archivo.txt y almacena
-*                            los datos solicitados en la funcion
-*                            datos_contacto usando *&, que se
-*                            utiliza para obtener la dirección de
-*                            memoria de la variable
-*/
+
 void guardar_datos() {
-    Datos guardar{};
+    datos();
     FILE *arch = fopen(nombre_arch, "a+");  //creacion de archivo en modo en que  permite leer y agregar información en un archivo que existe. Si no existe se crea.
-    datos(&guardar);
     fprintf(arch, "%s %s \n %s %s \n",      //Imprimimos en el archvio .txt los guardar solicitados
-            "Grupo: ", *&guardar.grupo,
-            "Nombre: ", *&guardar.nombre);
+            "Grupo: ", datos(),
+            "Nombre: ", nombre);
     fprintf(arch, "%s %s \n %s %d \n",
-            "Apellido: ", *&guardar.apellido,
-            "Telefono: ", *&guardar.telefono);
+            "Apellido: ", apellido,
+            "Telefono: ", telefono);
     fprintf(arch, "%s %s \n ",
-            "Correo electronico: ", *&guardar.correo_electronico);
+            "Correo electronico: ", correo_electronico);
     fprintf(arch, "%s \n", "-----------------");
 
     fclose(arch);                                      //cerramos el archivo
 }
-/*
-* Nombre de la función: datos
-* Tipo de función: void
-* Parámetros: puntero de Datos "contactos" struct
-* Dato de retorno: sin retorno
-* Descripción de la función: Solicita los datos del
-*                            contacto y los almacena
-*                            en la estructura Datos mediante
-*                            el uso de punteros
-*/
-void datos(Datos *pedir) {                                     //funcion para solicitar datos de usuario creados en un struct
+char * datos(){
     cout << "Ingrese los datos del contacto que desea guardar_datos \n";
     cout << "Grupo: ";
-    scanf("%s", pedir->grupo);
+    scanf("%s", grupo);
     cout << "Nombre: ";
-    scanf("%s", pedir->nombre);                       //llenado de dato previamente creado, con formato solicitado
+    scanf("%s", nombre);                       //llenado de dato previamente creado, con formato solicitado
     cout << "Apellido: ";
-    scanf("%s", pedir->apellido);
+    scanf("%s", apellido);
     cout << "Telefono: ";
-    scanf("%u", &(pedir->telefono));
+    scanf("%u", &telefono);
     cout << "Correo electronico: ";
-    scanf("%s", pedir->correo_electronico);
+    scanf("%s", correo_electronico);
     cout << "<<-------------------------------->>"<< endl; // el end1 es para asegurar que el texto se muestre antes de continuar con la siguiente instrucción.
+    return grupo, nombre, apellido, telefono, correo_electronico;
 }
 /*
 * Nombre de la función: lectura
@@ -168,4 +149,22 @@ void menu_dos(int &opcion){
         cout << "[2] Buscar por apellido \n";
     }
     cin>> opcion;
+}
+void editar(char* nombre_arch, int linea, char* nuevo_texto) {
+    char aux[100];
+    FILE* arch = fopen(nombre_arch, "r+");
+    if (arch == nullptr) {
+        printf("No se pudo abrir el archivo\n");
+    }
+    // Buscar la línea que queremos editar
+    for (int i = 1; i < linea; i++) {
+        if (fgets(aux, sizeof(aux), arch) == nullptr) {
+            printf("No se pudo leer la línea.\n");
+        }
+    }
+    long int posicion = ftell(arch);
+    sprintf(aux, "%s\n", nuevo_texto);
+    fseek(arch, posicion, SEEK_SET);// Copiar la nueva línea de texto en la posición adecuada del archivo
+    fputs(aux, arch);
+    fclose(arch);
 }
